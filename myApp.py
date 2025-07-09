@@ -119,8 +119,12 @@ def predict_batch(df_upload, model, tfidf, le_author, le_music):
 
     X_batch = hstack([features, tfidf_matrix])
     predictions = model.predict(X_batch)
+    
+    # Add the plays column to the results
+    df_upload['plays'] = df_upload.get('plays', np.nan)
 
     df_upload['prediksi_popularitas'] = np.where(predictions == 1, 'Populer', 'Tidak Populer')
+    
     return df_upload
 
 def main():
@@ -301,7 +305,7 @@ def main():
                 if st.button("🚀 Uji Data Unggah File"):
                     hasil = predict_batch(df_upload, model, tfidf, le_author, le_music)
                     st.success("✅ Hasil Uji selesai.")
-                    st.dataframe(hasil[['description', 'likes', 'comments', 'shares', 'prediksi_popularitas']])
+                    st.dataframe(hasil[['description', 'likes', 'comments', 'shares', 'plays','prediksi_popularitas']])
                     csv = hasil.to_csv(index=False).encode('utf-8')
                     st.download_button("📥 Download Hasil Uji Data", data=csv, file_name="hasil_uji.csv", mime='text/csv')
 
