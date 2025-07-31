@@ -153,9 +153,9 @@ def main():
 
     if st.session_state.section == 'EDA':
         st.header("1. Analisis Data Eksploratif")
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
             "📈 Distribusi Popularitas", "📊 Boxplot Interaksi", "🕒 Waktu Unggah Konten",
-            "📅 Heatmap Hari & Jam", "📏 Rata-rata Panjang Deskripsi", "📈 Rata-rata Interaksi Harian",
+            "📅 Heatmap Hari & Jam", "📈 Rata-rata Interaksi Harian",
             "📉 Scatter Likes vs Plays", "🌐 Wordcloud Hashtag", "🔍 Korelasi Fitur Numerik",
             "🎵 Musik Terpopuler"
         ])
@@ -189,19 +189,8 @@ def main():
             fig = px.imshow(pivot, text_auto='.2f', color_continuous_scale='YlGnBu',
                             title='Heatmap Popularitas Berdasarkan Hari dan Jam Unggah')
             st.plotly_chart(fig)
-
+          
         with tab5:
-            fig = px.histogram(df, x='description_length', color='popular', 
-                               title='Distribusi Panjang Deskripsi',
-                               marginal='rug', barmode='overlay')
-            st.plotly_chart(fig)
-
-            avg_desc = df.groupby('popular')['description_length'].mean().reset_index()
-            fig2 = px.bar(avg_desc, x='popular', y='description_length', color='popular',
-                          title='Rata-rata Panjang Deskripsi')
-            st.plotly_chart(fig2)
-
-        with tab6:
             day_map = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
             df['day_of_week_str'] = df['day_of_week'].map(lambda x: day_map[int(x)])
             avg_interactions = df.groupby('day_of_week_str')[['likes', 'comments', 'shares']].mean().reset_index()
@@ -209,25 +198,25 @@ def main():
                          title='Rata-rata Interaksi per Hari', color_discrete_sequence=px.colors.qualitative.Set3)
             st.plotly_chart(fig)
 
-        with tab7:
+        with tab6:
             fig = px.scatter(df, x='likes', y='plays', color='popular', log_x=True, log_y=True,
                              title='Likes vs Plays (log scale)', opacity=0.6)
             st.plotly_chart(fig)
 
-        with tab8:
+        with tab=7:
             text = ' '.join(df['hashtags'])
             wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
             fig = px.imshow(wordcloud, title='Wordcloud Hashtags')
             st.plotly_chart(fig)
 
-        with tab9:
+        with tab8:
             corr_cols = ['likes', 'comments', 'shares', 'plays', 'description_length', 'description_word_count', 'hour']
             corr = df[corr_cols].corr()
             fig = px.imshow(corr, text_auto=True, color_continuous_scale='RdBu',
                             title='Korelasi Fitur Numerik')
             st.plotly_chart(fig)
 
-        with tab10:
+        with tab9:
             top_music_popular = df[df['popular'] == 1]['music'].value_counts().head(10)
             top_music_not_popular = df[df['popular'] == 0]['music'].value_counts().head(10)
             music_compare = pd.DataFrame({
